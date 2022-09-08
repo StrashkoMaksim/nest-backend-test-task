@@ -40,4 +40,17 @@ export class UsersRepository {
     );
     return result[0];
   }
+
+  async updateUser(user: User) {
+    const result = await this.databaseService.executeQuery(`
+      UPDATE users
+      SET
+        ${user.email ? `email = '${user.email}', ` : ''}
+        ${user.password ? `password = '${user.password}', ` : ''}
+        ${user.nickname ? `nickname = '${user.nickname}' ` : ''}
+      WHERE uid = '${user.uid}'
+      RETURNING email, nickname;
+    `);
+    return result[0];
+  }
 }

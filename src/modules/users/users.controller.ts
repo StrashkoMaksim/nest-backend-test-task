@@ -25,6 +25,7 @@ import {
 import { TokenResponse } from './dto/token-response';
 import { Request } from 'express';
 import { User } from './entities/user.entity';
+import { UpdateUserResponse } from "./dto/update-user-response";
 
 @ApiTags('users')
 @Controller('users')
@@ -85,11 +86,15 @@ export class UsersController {
 
   @Put()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Изменение информации о пользователе' })
+  @ApiOkResponse({ description: 'Пользователь успешно изменил информацию', type: UpdateUserResponse })
+  @ApiBearerAuth()
+  @ApiBody({ type: UpdateUserDto })
   update(
     @Req() req: Request & { user: User },
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    // return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(req.user.uid, updateUserDto);
   }
 
   @Delete()
