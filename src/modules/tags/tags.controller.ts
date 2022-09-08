@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
@@ -17,12 +19,15 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { CreateTagResponse } from './dto/create-tag-response';
+import { User } from '../users/entities/user.entity';
+import { JwtAuthGuard } from '../JWT/jwt-auth-guard';
 
 @Controller('tags')
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Создание тега' })
   @ApiCreatedResponse({
     type: CreateTagResponse,
@@ -30,8 +35,8 @@ export class TagsController {
   })
   @ApiBearerAuth()
   @ApiBody({ type: CreateTagDto })
-  create(@Body() dto: CreateTagDto) {
-    return this.tagsService.create(dto);
+  create(@Req() req: Request & { user: User }, @Body() dto: CreateTagDto) {
+    return this.tagsService.create(req.user.uid, dto);
   }
 
   @Get()

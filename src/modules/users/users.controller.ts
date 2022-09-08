@@ -82,8 +82,8 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findOne(@Req() req: Request & { user: User }) {
-    // return this.usersService.findOne(+id);
+  getSelfWithTags(@Req() req: Request & { user: User }) {
+    return this.usersService.getSelfWithTags(req.user.uid);
   }
 
   @Put()

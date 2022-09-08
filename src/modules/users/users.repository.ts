@@ -5,11 +5,7 @@ import { GetUserResponse } from './users.types';
 
 @Injectable()
 export class UsersRepository {
-  constructor(private databaseService: DatabaseService) {
-    databaseService.executeQuery(`
-      
-    `);
-  }
+  constructor(private databaseService: DatabaseService) {}
 
   async createUser(
     email: string,
@@ -57,6 +53,28 @@ export class UsersRepository {
   async removeUser(uid: string) {
     await this.databaseService.executeQuery(`
       DELETE FROM users WHERE uid = '${uid}';
-    `)
+    `);
+  }
+
+  async getUserWithTags(uid: string) {
+    const res = await this.databaseService.executeQuery(`
+      SELECT users.email, users.nickname, tags.id, tags.name, tags.sortOrder
+      FROM users
+      LEFT OUTER JOIN tags ON users.uid = tags.creator
+      WHERE users.uid = '${uid}';
+    `);
+    const result = {
+      email: res[0].email,
+      nickname: res[0].nickname,
+      tags: [],
+    };
+    res.forEach((el) =>
+      result.tags.push({
+        id: String(el.id),
+        name: el.name,
+        sortOrder: String(el.sortorder),
+      }),
+    );
+    return result;
   }
 }

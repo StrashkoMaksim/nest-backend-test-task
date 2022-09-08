@@ -22,7 +22,6 @@ export class CreateTagDto {
     required: false,
   })
   @IsOptional()
-  @IsNumberString({}, { message: 'Число должно быть строкой' })
   @Type(() => Number)
   @IsInt({ message: 'Только целое число' })
   readonly sortOrder: number;

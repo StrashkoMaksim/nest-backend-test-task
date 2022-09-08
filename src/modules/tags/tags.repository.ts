@@ -7,33 +7,39 @@ import { Tag } from './entities/tag.entity';
 export class TagsRepository {
   constructor(private databaseService: DatabaseService) {}
 
-  async getByName(name: string): Promise<Tag> {
+  async getByName(name: string): Promise<Tag | undefined> {
     const res = await this.databaseService.executeQuery(`
       SELECT * FROM tags WHERE name = '${name}';
     `);
-    const tag = new Tag(
-      res[0].id,
-      res[0].creator,
-      res[0].name,
-      res[0].sortOrder,
-    );
-    return tag;
+
+    if (res[0]) {
+      const tag = new Tag(
+        res[0].id,
+        res[0].creator,
+        res[0].name,
+        res[0].sortOrder,
+      );
+      return tag;
+    }
   }
 
-  async create(dto: CreateTagDto): Promise<Tag> {
+  async create(creator: string, dto: CreateTagDto): Promise<Tag> {
+    const values: any[] = [dto.name, creator];
+    if (dto.sortOrder) values.push(dto.sortOrder);
+
     const res = await this.databaseService.executeQuery(
       `
-      INSERT INTO tags (name, sortOrder)
-      VALUES ($1, $2)
+      INSERT INTO tags (name, creator${dto.sortOrder ? ', sortOrder' : ''})
+      VALUES ($1, $2${dto.sortOrder ? ', $3' : ''})
       RETURNING *;
     `,
-      [dto.name, dto.sortOrder],
+      values,
     );
     const tag = new Tag(
       res[0].id,
       res[0].creator,
       res[0].name,
-      res[0].sortOrder,
+      res[0].sortorder,
     );
     return tag;
   }

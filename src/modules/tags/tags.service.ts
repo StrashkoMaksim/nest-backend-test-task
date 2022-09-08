@@ -7,7 +7,7 @@ import { TagsRepository } from './tags.repository';
 export class TagsService {
   constructor(private tagsRepository: TagsRepository) {}
 
-  async create(dto: CreateTagDto) {
+  async create(creatorId: string, dto: CreateTagDto) {
     const candidate = await this.tagsRepository.getByName(dto.name);
     if (candidate) {
       throw new ConflictException([
@@ -15,7 +15,7 @@ export class TagsService {
       ]);
     }
 
-    const tag = await this.tagsRepository.create(dto);
+    const tag = await this.tagsRepository.create(creatorId, dto);
 
     return {
       id: String(tag.getId()),

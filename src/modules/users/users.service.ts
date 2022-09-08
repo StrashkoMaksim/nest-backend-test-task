@@ -86,6 +86,10 @@ export class UsersService {
     return 'Пользователь успешно удален';
   }
 
+  async getSelfWithTags(uid: string) {
+    return await this.usersRepository.getUserWithTags(uid);
+  }
+
   private async validateUser(dto: UpdateUserDto) {
     if (dto.email) {
       const candidateByEmail = await this.usersRepository.getByEmail(dto.email);
