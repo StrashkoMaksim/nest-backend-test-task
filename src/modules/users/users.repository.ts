@@ -53,4 +53,10 @@ export class UsersRepository {
     `);
     return result[0];
   }
+
+  async removeUser(uid: string) {
+    await this.databaseService.executeQuery(`
+      DELETE FROM users WHERE uid = '${uid}';
+    `)
+  }
 }

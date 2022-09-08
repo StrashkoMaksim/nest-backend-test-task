@@ -20,12 +20,12 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { TokenResponse } from './dto/token-response';
 import { Request } from 'express';
 import { User } from './entities/user.entity';
-import { UpdateUserResponse } from "./dto/update-user-response";
+import { UpdateUserResponse } from './dto/update-user-response';
 
 @ApiTags('users')
 @Controller('users')
@@ -74,7 +74,9 @@ export class UsersController {
   @ApiOkResponse({ description: 'Пользователь успешно вышел' })
   @ApiBearerAuth()
   logout() {
-    // Не уверен, насколько необходим этот endpoint
+    // Не уверен, насколько необходим этот endpoint. При авторизации с помощью
+    // JWT сервер не знает, авторизован пользователь или нет. Достаточно
+    // удалить токен на клиенте.
     return true;
   }
 
@@ -87,7 +89,10 @@ export class UsersController {
   @Put()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Изменение информации о пользователе' })
-  @ApiOkResponse({ description: 'Пользователь успешно изменил информацию', type: UpdateUserResponse })
+  @ApiOkResponse({
+    description: 'Пользователь успешно изменил информацию',
+    type: UpdateUserResponse,
+  })
   @ApiBearerAuth()
   @ApiBody({ type: UpdateUserDto })
   update(
@@ -99,7 +104,10 @@ export class UsersController {
 
   @Delete()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Удаление пользователя' })
+  @ApiOkResponse({ description: 'Пользователь успешно удален' })
+  @ApiBearerAuth()
   remove(@Req() req: Request & { user: User }) {
-    // return this.usersService.remove(+id);
+    return this.usersService.remove(req.user.uid);
   }
 }

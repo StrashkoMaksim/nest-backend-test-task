@@ -81,6 +81,11 @@ export class UsersService {
     };
   }
 
+  async remove(uid: string) {
+    await this.usersRepository.removeUser(uid);
+    return 'Пользователь успешно удален';
+  }
+
   private async validateUser(dto: UpdateUserDto) {
     if (dto.email) {
       const candidateByEmail = await this.usersRepository.getByEmail(dto.email);
