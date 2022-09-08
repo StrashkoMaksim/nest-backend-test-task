@@ -7,6 +7,23 @@ import { Tag } from './entities/tag.entity';
 export class TagsRepository {
   constructor(private databaseService: DatabaseService) {}
 
+  async getById(id: number): Promise<Tag | undefined> {
+    const res = await this.databaseService.executeQuery(`
+      SELECT * FROM tags LEFT OUTER JOIN users ON tags.creator = users.uid WHERE id = '${id}';
+    `);
+    console.log(res);
+    if (res[0]) {
+      const tag = new Tag(
+        res[0].id,
+        res[0].creator,
+        res[0].name,
+        res[0].sortOrder,
+      );
+      tag.setCreatorInfo({ nickname: res[0].nickname, uid: res[0].uid });
+      return tag;
+    }
+  }
+
   async getByName(name: string): Promise<Tag | undefined> {
     const res = await this.databaseService.executeQuery(`
       SELECT * FROM tags WHERE name = '${name}';
@@ -42,5 +59,21 @@ export class TagsRepository {
       res[0].sortorder,
     );
     return tag;
+  }
+
+  async update(tag: Tag) {
+    await this.databaseService.executeQuery(`
+      UPDATE tags
+      SET
+        ${tag.getName() ? `name = '${tag.getName()}', ` : ''}
+        ${tag.getSortOrder() ? `sortorder = ${tag.getSortOrder()} ` : ''}
+      WHERE id = ${tag.getId()};
+    `);
+  }
+
+  async remove(id: number) {
+    await this.databaseService.executeQuery(`
+      DELETE FROM tags WHERE id = ${id};
+    `);
   }
 }

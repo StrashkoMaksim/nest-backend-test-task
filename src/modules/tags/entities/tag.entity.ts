@@ -1,8 +1,14 @@
+interface CreatorInfo {
+  nickname: string;
+  uid: string;
+}
+
 export class Tag {
   private id: number;
   private creator: string;
   private name: string;
   private sortOrder: number;
+  private creatorInfo: CreatorInfo | undefined = undefined;
 
   constructor(id: number, creator: string, name: string, sortOrder: number) {
     this.id = id;
@@ -27,6 +33,10 @@ export class Tag {
     return this.sortOrder;
   }
 
+  getCreatorInfo() {
+    return this.creatorInfo;
+  }
+
   setId(id: number) {
     this.id = id;
   }
@@ -41,5 +51,9 @@ export class Tag {
 
   setSortOrder(sortOrder: number) {
     this.sortOrder = sortOrder;
+  }
+
+  setCreatorInfo(creatorInfo: CreatorInfo) {
+    this.creatorInfo = creatorInfo;
   }
 }

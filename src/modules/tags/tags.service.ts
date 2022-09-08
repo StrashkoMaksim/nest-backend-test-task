@@ -1,7 +1,13 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { TagsRepository } from './tags.repository';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class TagsService {
@@ -28,15 +34,50 @@ export class TagsService {
     return `This action returns all tags`;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
+    console.log(1);
+    const tag = await this.tagsRepository.getById(id);
+    console.log(tag);
     return `This action returns a #${id} tag`;
   }
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`;
+  async update(id: number, dto: UpdateTagDto, user: User) {
+    const tag = await this.tagsRepository.getById(id);
+    if (!tag) {
+      throw new NotFoundException('Тег с указанным ID не найден');
+    }
+
+    if (tag.getCreator() !== user.uid) {
+      throw new ForbiddenException('Вы не являетесь создателем тега');
+    }
+
+    if (dto.name) tag.setName(dto.name);
+    if (dto.sortOrder) tag.setSortOrder(dto.sortOrder);
+
+    await this.tagsRepository.update(tag);
+
+    return {
+      creator: {
+        nickname: user.nickname,
+        uid: user.uid,
+      },
+      name: tag.getName(),
+      sortOrder: String(tag.getSortOrder()),
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tag`;
+  async remove(id: number, userId: string) {
+    const tag = await this.tagsRepository.getById(id);
+    if (!tag) {
+      throw new NotFoundException('Тег с указанным ID не найден');
+    }
+
+    if (tag.getCreator() !== userId) {
+      throw new ForbiddenException('Вы не являетесь создателем тега');
+    }
+
+    await this.tagsRepository.remove(id);
+
+    return `Тег успешно удален`;
   }
 }

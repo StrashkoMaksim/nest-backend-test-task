@@ -26,6 +26,7 @@ import { TokenResponse } from './dto/token-response';
 import { Request } from 'express';
 import { User } from './entities/user.entity';
 import { UpdateUserResponse } from './dto/update-user-response';
+import { GetUserWithTagsResponse } from './dto/get-user-with-tags-response';
 
 @ApiTags('users')
 @Controller('users')
@@ -82,6 +83,12 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Получение информации о пользователе с его тегами' })
+  @ApiOkResponse({
+    description: 'Получена информация о пользователе с тегами',
+    type: GetUserWithTagsResponse,
+  })
+  @ApiBearerAuth()
   getSelfWithTags(@Req() req: Request & { user: User }) {
     return this.usersService.getSelfWithTags(req.user.uid);
   }
