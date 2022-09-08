@@ -7,12 +7,7 @@ import { GetUserResponse } from './users.types';
 export class UsersRepository {
   constructor(private databaseService: DatabaseService) {
     databaseService.executeQuery(`
-      CREATE TABLE IF NOT EXISTS users (
-        uid uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        password VARCHAR(100) NOT NULL,
-        nickname VARCHAR(30) UNIQUE NOT NULL
-      );
+      
     `);
   }
 

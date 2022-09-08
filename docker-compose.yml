@@ -15,7 +15,7 @@ services:
       - '3000:3000'
     command: npm run start:dev
     depends_on:
-      - postgres
+      - migration
     links:
       - postgres
     restart: always
@@ -34,6 +34,17 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./pg_hba.conf:/var/lib/foo/pg_hba.conf
     command: ["postgres", "-c", "hba_file=/var/lib/foo/pg_hba.conf"]
+
+  migration:
+    build: .
+    image: api
+    command: npm run migrate:up:dev
+    volumes:
+      - .:/api
+    links:
+      - postgres
+    depends_on:
+      - postgres
 
 volumes:
   pgdata:

@@ -19,7 +19,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:dev": "./node_modules/.bin/env-cmd -f .env.development db-migrate up --config database/database.json -e dev",
+    "migrate:create:dev": "./node_modules/.bin/env-cmd -f .env.development db-migrate create --config database/database.json -e dev -m ./database/migrations",
+    "migrate:up:dev": "./node_modules/.bin/env-cmd -f .env.development db-migrate up --config database/database.json -e dev -m ./database/migrations",
+    "migrate:down:dev": "./node_modules/.bin/env-cmd -f .env.development db-migrate down --config database/database.json -e dev -m ./database/migrations",
+    "migrate:reset:dev": "./node_modules/.bin/env-cmd -f .env.development db-migrate down --config database/database.json -e dev -m ./database/migrations"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
