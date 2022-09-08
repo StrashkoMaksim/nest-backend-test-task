@@ -1,0 +1,100 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Delete,
+  Put,
+  UseGuards,
+  Req,
+  HttpCode,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { SignInUserDto } from './dto/sign-in-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { JwtAuthGuard } from '../JWT/jwt-auth-guard';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags
+} from '@nestjs/swagger';
+import { TokenResponse } from './dto/token-response';
+import { Request } from 'express';
+import { User } from './entities/user.entity';
+
+@ApiTags('users')
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post('/signin')
+  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @ApiCreatedResponse({
+    description: 'Пользователь успешно зарегистрирован',
+    type: TokenResponse,
+  })
+  @ApiBody({ type: SignInUserDto })
+  signIn(@Body() dto: SignInUserDto) {
+    return this.usersService.signIn(dto);
+  }
+
+  @Post('/login')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Авторизация пользователя' })
+  @ApiOkResponse({
+    description: 'Пользователь успешно авторизован',
+    type: TokenResponse,
+  })
+  @ApiBody({ type: LoginUserDto })
+  login(@Body() dto: LoginUserDto) {
+    return this.usersService.login(dto);
+  }
+
+  @Get('/check-auth')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Обновление токена' })
+  @ApiOkResponse({
+    description: 'Пользователь успешно обновил токен',
+    type: TokenResponse,
+  })
+  @ApiBearerAuth()
+  checkAuth(@Req() req: Request & { user: User }) {
+    return this.usersService.generateToken(req.user);
+  }
+
+  @Post('/logout')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Выход пользователя из системы' })
+  @ApiOkResponse({ description: 'Пользователь успешно вышел' })
+  @ApiBearerAuth()
+  logout() {
+    // Не уверен, насколько необходим этот endpoint
+    return true;
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  findOne(@Req() req: Request & { user: User }) {
+    // return this.usersService.findOne(+id);
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  update(
+    @Req() req: Request & { user: User },
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    // return this.usersService.update(+id, updateUserDto);
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  remove(@Req() req: Request & { user: User }) {
+    // return this.usersService.remove(+id);
+  }
+}
