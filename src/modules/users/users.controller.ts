@@ -90,7 +90,7 @@ export class UsersController {
   })
   @ApiBearerAuth()
   getSelfWithTags(@Req() req: Request & { user: User }) {
-    return this.usersService.getSelfWithTags(req.user.uid);
+    return this.usersService.getSelfWithTags(req.user);
   }
 
   @Put()

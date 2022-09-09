@@ -11,11 +11,13 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from './users.repository';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersTagsRepository } from '../tags/users-tags/users-tags.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
     private usersRepository: UsersRepository,
+    private usersTagsRepository: UsersTagsRepository,
     private jwtService: JwtService,
   ) {}
 
@@ -86,8 +88,14 @@ export class UsersService {
     return 'Пользователь успешно удален';
   }
 
-  async getSelfWithTags(uid: string) {
-    return await this.usersRepository.getUserWithTags(uid);
+  async getSelfWithTags(user: User) {
+    const tags = await this.usersTagsRepository.findUserTags(user.uid);
+
+    return {
+      email: user.email,
+      nickname: user.nickname,
+      tags,
+    };
   }
 
   private async validateUser(dto: UpdateUserDto) {

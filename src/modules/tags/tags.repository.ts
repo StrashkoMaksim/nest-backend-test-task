@@ -118,4 +118,18 @@ export class TagsRepository {
     `);
     return res[0].count;
   }
+
+  async getMy(uid: string) {
+    const res = await this.databaseService.executeQuery(`
+      SELECT id, name, sortOrder FROM tags WHERE creator = '${uid}';
+    `);
+
+    const tags = res.map((tag) => ({
+      id: tag.id,
+      name: tag.name,
+      sortOrder: String(tag.sortorder),
+    }));
+
+    return tags;
+  }
 }

@@ -55,26 +55,4 @@ export class UsersRepository {
       DELETE FROM users WHERE uid = '${uid}';
     `);
   }
-
-  async getUserWithTags(uid: string) {
-    const res = await this.databaseService.executeQuery(`
-      SELECT users.email, users.nickname, tags.id, tags.name, tags.sortOrder
-      FROM users
-      LEFT OUTER JOIN tags ON users.uid = tags.creator
-      WHERE users.uid = '${uid}';
-    `);
-    const result = {
-      email: res[0].email,
-      nickname: res[0].nickname,
-      tags: [],
-    };
-    res.forEach((el) =>
-      result.tags.push({
-        id: String(el.id),
-        name: el.name,
-        sortOrder: String(el.sortorder),
-      }),
-    );
-    return result;
-  }
 }

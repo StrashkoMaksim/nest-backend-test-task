@@ -23,7 +23,11 @@ export class UsersTagsService {
     return { tags };
   }
 
-  async getMy() {}
+  async getMy(uid: string) {
+    const tags = await this.tagsRepository.getMy(uid);
+
+    return { tags };
+  }
 
   async remove(id: number, uid: string) {
     await this.userTagsRepository.remove(id);

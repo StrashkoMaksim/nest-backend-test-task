@@ -12,14 +12,11 @@ import {
   Get,
   Param,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../JWT/jwt-auth-guard';
 import { User } from '../../users/entities/user.entity';
-import { TagsInfoResponse } from '../dto/tags-info-response';
-import { GetTagsDto } from '../dto/get-tags-dto';
 import { UsersTagsService } from './users-tags.service';
 import { AddTagsDto } from './dto/add-tags-dto';
 import { UserTagsResponse } from './dto/user-tags-response';
@@ -42,17 +39,18 @@ export class UsersTagsController {
     return this.usersTagsService.add(req.user.uid, dto);
   }
 
-  @Get()
+  @Get('/my')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary: 'Получение информации о тегах, которые создал пользователь',
   })
   @ApiCreatedResponse({
-    type: TagsInfoResponse,
+    type: UserTagsResponse,
     description: 'Информация о тегах получена',
   })
   @ApiBearerAuth()
-  getMy(@Query() dto: GetTagsDto) {
-    return this.usersTagsService.getMy();
+  getMy(@Req() req: Request & { user: User }) {
+    return this.usersTagsService.getMy(req.user.uid);
   }
 
   @Delete(':id')

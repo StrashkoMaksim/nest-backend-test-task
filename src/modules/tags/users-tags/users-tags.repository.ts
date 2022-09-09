@@ -37,6 +37,4 @@ export class UsersTagsRepository {
       DELETE FROM users_tags WHERE tagId = ${id};
     `);
   }
-
-  async getMy() {}
 }
