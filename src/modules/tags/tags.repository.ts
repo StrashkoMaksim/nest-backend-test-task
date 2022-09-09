@@ -17,7 +17,7 @@ export class TagsRepository {
         res[0].id,
         res[0].creator,
         res[0].name,
-        res[0].sortOrder,
+        res[0].sortorder,
       );
       tag.setCreatorInfo({ nickname: res[0].nickname, uid: res[0].uid });
       return tag;
@@ -34,7 +34,7 @@ export class TagsRepository {
         res[0].id,
         res[0].creator,
         res[0].name,
-        res[0].sortOrder,
+        res[0].sortorder,
       );
       return tag;
     }
@@ -65,8 +65,8 @@ export class TagsRepository {
     await this.databaseService.executeQuery(`
       UPDATE tags
       SET
-        ${tag.getName() ? `name = '${tag.getName()}', ` : ''}
-        ${tag.getSortOrder() ? `sortorder = ${tag.getSortOrder()} ` : ''}
+        name = '${tag.getName()}',
+        sortorder = ${tag.getSortOrder()}
       WHERE id = ${tag.getId()};
     `);
   }

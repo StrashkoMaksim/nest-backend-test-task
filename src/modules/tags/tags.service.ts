@@ -8,6 +8,7 @@ import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { TagsRepository } from './tags.repository';
 import { User } from '../users/entities/user.entity';
+import { CreatorInfo } from './entities/tag.entity';
 
 @Injectable()
 export class TagsService {
@@ -34,14 +35,23 @@ export class TagsService {
     return `This action returns all tags`;
   }
 
-  async findOne(id: number) {
-    console.log(1);
+  async findOne(
+    id: number,
+  ): Promise<{ creator: CreatorInfo; sortOrder: string; name: string }> {
     const tag = await this.tagsRepository.getById(id);
-    console.log(tag);
-    return `This action returns a #${id} tag`;
+
+    return {
+      creator: tag.getCreatorInfo(),
+      name: tag.getName(),
+      sortOrder: String(tag.getSortOrder()),
+    };
   }
 
-  async update(id: number, dto: UpdateTagDto, user: User) {
+  async update(
+    id: number,
+    dto: UpdateTagDto,
+    user: User,
+  ): Promise<{ creator: CreatorInfo; sortOrder: string; name: string }> {
     const tag = await this.tagsRepository.getById(id);
     if (!tag) {
       throw new NotFoundException('Тег с указанным ID не найден');
@@ -51,16 +61,15 @@ export class TagsService {
       throw new ForbiddenException('Вы не являетесь создателем тега');
     }
 
+    console.log(tag);
     if (dto.name) tag.setName(dto.name);
     if (dto.sortOrder) tag.setSortOrder(dto.sortOrder);
+    console.log(tag);
 
     await this.tagsRepository.update(tag);
 
     return {
-      creator: {
-        nickname: user.nickname,
-        uid: user.uid,
-      },
+      creator: tag.getCreatorInfo(),
       name: tag.getName(),
       sortOrder: String(tag.getSortOrder()),
     };

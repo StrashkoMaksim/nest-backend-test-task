@@ -1,4 +1,4 @@
-interface CreatorInfo {
+export interface CreatorInfo {
   nickname: string;
   uid: string;
 }

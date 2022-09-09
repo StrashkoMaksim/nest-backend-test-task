@@ -22,6 +22,7 @@ import {
 import { CreateTagResponse } from './dto/create-tag-response';
 import { User } from '../users/entities/user.entity';
 import { JwtAuthGuard } from '../JWT/jwt-auth-guard';
+import { TagInfoResponse } from "./dto/tag-info-response";
 
 @ApiTags('tags')
 @Controller('tags')
@@ -48,23 +49,42 @@ export class TagsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.tagsService.findOne(+id);
+  @ApiOperation({ summary: 'Получение информации о теге' })
+  @ApiCreatedResponse({
+    type: TagInfoResponse,
+    description: 'Информация о теге получена',
+  })
+  @ApiBearerAuth()
+  findOne(@Param('id') id: number) {
+    return this.tagsService.findOne(id);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Изменение информации о теге' })
+  @ApiCreatedResponse({
+    type: TagInfoResponse,
+    description: 'Информация о теге изменена',
+  })
+  @ApiBearerAuth()
+  @ApiBody({ type: UpdateTagDto })
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateTagDto: UpdateTagDto,
     @Req() req: Request & { user: User },
   ) {
-    return this.tagsService.update(+id, updateTagDto, req.user);
+    return this.tagsService.update(id, updateTagDto, req.user);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string, @Req() req: Request & { user: User }) {
-    return this.tagsService.remove(+id, req.user.uid);
+  @ApiOperation({ summary: 'Удаление тега' })
+  @ApiCreatedResponse({
+    type: String,
+    description: 'Тег успешно удален',
+  })
+  @ApiBearerAuth()
+  remove(@Param('id') id: number, @Req() req: Request & { user: User }) {
+    return this.tagsService.remove(id, req.user.uid);
   }
 }
