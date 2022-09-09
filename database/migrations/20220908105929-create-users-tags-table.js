@@ -19,7 +19,8 @@ exports.up = function (db) {
     CREATE TABLE IF NOT EXISTS users_tags (
       id SERIAL PRIMARY KEY,
       userId uuid NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
-      orderId INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE
+      tagId INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+      CONSTRAINT user_tag_unique UNIQUE (userId, tagId)
     );
   `);
   return null;
