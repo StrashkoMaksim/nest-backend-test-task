@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { Tag } from './entities/tag.entity';
+import { GetTagsDto } from './dto/get-tags-dto';
+import { TagInfoResponse } from "./dto/tag-info-response";
 
 @Injectable()
 export class TagsRepository {
@@ -75,5 +77,45 @@ export class TagsRepository {
     await this.databaseService.executeQuery(`
       DELETE FROM tags WHERE id = ${id};
     `);
+  }
+
+  async findAll(
+    dto: GetTagsDto,
+  ): Promise<
+    { creator: { uid: any; nickname: any }; sortOrder: string; name: any }[]
+  > {
+    const res = await this.databaseService.executeQuery(`
+      SELECT * FROM tags
+      LEFT OUTER JOIN users ON tags.creator = users.uid
+      ${
+        dto.sortByOrder || dto.sortByName
+          ? `ORDER BY
+          ${dto.sortByOrder ? `tags.sortorder ASC` : ''}
+          ${dto.sortByOrder && dto.sortByName ? ', ' : ''}
+          ${dto.sortByName ? `tags.name ASC` : ''}
+          `
+          : ''
+      }
+      ${dto.length ? `LIMIT ${dto.length}` : ''}
+      ${dto.offset ? `OFFSET ${dto.offset}` : ''};
+    `);
+
+    const tags = res.map((row) => ({
+      creator: {
+        nickname: row.nickname,
+        uid: row.uid,
+      },
+      name: row.name,
+      sortOrder: String(row.sortorder),
+    }));
+
+    return tags;
+  }
+
+  async getQuantity(): Promise<number> {
+    const res = await this.databaseService.executeQuery(`
+      SELECT COUNT(*) FROM tags;
+    `);
+    return res[0].count;
   }
 }

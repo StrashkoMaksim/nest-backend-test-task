@@ -8,6 +8,7 @@ import {
   Req,
   UseGuards,
   Put,
+  Query,
 } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { CreateTagDto } from './dto/create-tag.dto';
@@ -22,7 +23,9 @@ import {
 import { CreateTagResponse } from './dto/create-tag-response';
 import { User } from '../users/entities/user.entity';
 import { JwtAuthGuard } from '../JWT/jwt-auth-guard';
-import { TagInfoResponse } from "./dto/tag-info-response";
+import { TagInfoResponse } from './dto/tag-info-response';
+import { GetTagsDto } from './dto/get-tags-dto';
+import { TagsInfoResponse } from './dto/tags-info-response';
 
 @ApiTags('tags')
 @Controller('tags')
@@ -43,8 +46,14 @@ export class TagsController {
   }
 
   @Get()
-  findAll() {
-    return this.tagsService.findAll();
+  @ApiOperation({ summary: 'Получение информации о нескольких тегах' })
+  @ApiCreatedResponse({
+    type: TagsInfoResponse,
+    description: 'Информация о тегах получена',
+  })
+  @ApiBearerAuth()
+  findAll(@Query() dto: GetTagsDto) {
+    return this.tagsService.findAll(dto);
   }
 
   @Get(':id')

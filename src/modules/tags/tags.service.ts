@@ -9,6 +9,7 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 import { TagsRepository } from './tags.repository';
 import { User } from '../users/entities/user.entity';
 import { CreatorInfo } from './entities/tag.entity';
+import { GetTagsDto } from './dto/get-tags-dto';
 
 @Injectable()
 export class TagsService {
@@ -31,8 +32,20 @@ export class TagsService {
     };
   }
 
-  findAll() {
-    return `This action returns all tags`;
+  async findAll(dto: GetTagsDto) {
+    const tags = await this.tagsRepository.findAll(dto);
+    const quantity = await this.tagsRepository.getQuantity();
+    const meta: { quantity: number; length?: number; offset?: number } = {
+      quantity,
+    };
+
+    if (dto.length) meta.length = dto.length;
+    if (dto.offset) meta.offset = dto.offset;
+
+    return {
+      data: tags,
+      meta,
+    };
   }
 
   async findOne(
