@@ -17,8 +17,8 @@ export class CreateTagDto {
   readonly name: string;
 
   @ApiProperty({
-    example: 'Название',
-    description: 'Название тега',
+    example: '0',
+    description: 'Порядок тега',
     required: false,
   })
   @IsOptional()
