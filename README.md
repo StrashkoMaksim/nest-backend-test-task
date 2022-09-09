@@ -11,12 +11,12 @@ A demo is available at [this link](http://176.113.82.233:3000/api/docs).
 1. Clone the repository
 2. Install dependencies:
 ```bash
-npm install
+$ npm install
 ```
 3. Copy the .env file, change the environment variables and rename the file to ".env.development".
 4. Install Docker (docker-compose)
 5. Run commands:
 ```bash
-docker-compose build
-docker-compose up
+$ docker-compose build
+$ docker-compose up
 ```
