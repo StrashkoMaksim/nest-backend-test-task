@@ -17,14 +17,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../JWT/jwt-auth-guard';
-import { CreateTagResponse } from '../dto/create-tag-response';
-import { CreateTagDto } from '../dto/create-tag.dto';
 import { User } from '../../users/entities/user.entity';
 import { TagsInfoResponse } from '../dto/tags-info-response';
 import { GetTagsDto } from '../dto/get-tags-dto';
 import { UsersTagsService } from './users-tags.service';
 import { AddTagsDto } from './dto/add-tags-dto';
-import { UserTagsResponse } from "./dto/user-tags-response";
+import { UserTagsResponse } from './dto/user-tags-response';
 
 @ApiTags('user/tag')
 @Controller('user/tag')
@@ -63,11 +61,11 @@ export class UsersTagsController {
     summary: 'Удаление тега из списка прикрепленных к пользователю',
   })
   @ApiCreatedResponse({
-    type: String,
+    type: UserTagsResponse,
     description: 'Тег успешно удален',
   })
   @ApiBearerAuth()
   remove(@Param('id') id: number, @Req() req: Request & { user: User }) {
-    return this.usersTagsService.remove();
+    return this.usersTagsService.remove(id, req.user.uid);
   }
 }

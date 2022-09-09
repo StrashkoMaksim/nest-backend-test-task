@@ -25,5 +25,11 @@ export class UsersTagsService {
 
   async getMy() {}
 
-  async remove() {}
+  async remove(id: number, uid: string) {
+    await this.userTagsRepository.remove(id);
+
+    const tags = await this.userTagsRepository.findUserTags(uid);
+
+    return { tags };
+  }
 }
