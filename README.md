@@ -4,7 +4,7 @@ Test task for the position of backend developer. It was necessary to implement a
 
 By condition, you can not use ORM. It was necessary to configure Docker, create documentation in Swagger, use DTOs, validate data, create database migrations, and set up JWT authorization.
 
-A demo is available at [this link](http://176.113.82.233:3000/api/docs).
+A demo is available at [this link](https://nest-test-task.strashko-maksim.ru/api/docs).
 
 ## Usage
 
